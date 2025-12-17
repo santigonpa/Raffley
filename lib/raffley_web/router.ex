@@ -18,12 +18,13 @@ defmodule RaffleyWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :home
+    get "/rules", RuleController, :index
   end
 
   # Other scopes may use custom stacks.
-  # scope "/api", RaffleyWeb do
-  #   pipe_through :api
-  # end
+  scope "/api", RaffleyWeb do
+    pipe_through :api
+  end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
   if Application.compile_env(:raffley, :dev_routes) do
