@@ -10,5 +10,11 @@ defmodule RaffleyWeb.EstimatorLive do
   # def render(assigns) do
   #   we could also render the html here, if not it will automatically
   #   look for a template file based on the name of the module
-  # end
+  # ende
+
+  def handle_event("add", %{"quantity" => quantity}, socket) do
+    socket = update(socket, :tickets, &(&1 + String.to_integer(quantity)))
+
+    {:noreply, socket}
+  end
 end
