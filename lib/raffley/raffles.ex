@@ -9,7 +9,7 @@ defmodule Raffley.Raffles do
         id: 1,
         prize: "Autographed Jersey",
         ticket_price: 2,
-        status: :open,
+        status: :closed,
         image_path: "/images/jersey.jpg",
         description: "Step up, sports fan!"
       },
