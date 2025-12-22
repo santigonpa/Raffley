@@ -45,6 +45,7 @@ defmodule RaffleyWeb.RaffleLive.Show do
           <.featured_raffles raffles={@featured_raffles} />
         </div>
       </div>
+      <.back navigate={~p"/raffles"}>Back to raffles</.back>
     </div>
     """
   end
@@ -55,7 +56,9 @@ defmodule RaffleyWeb.RaffleLive.Show do
       <h4>Featured Raffles</h4>
       <ul class="raffles">
         <li :for={raffle <- @raffles}>
-          <img src={raffle.image_path} /> {raffle.prize}
+          <.link navigate={~p"/raffles/#{raffle}"}>
+            <img src={raffle.image_path} /> {raffle.prize}
+          </.link>
         </li>
       </ul>
     </section>
