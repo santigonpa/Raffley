@@ -17,10 +17,9 @@ defmodule RaffleyWeb.RaffleLive.Index do
     ~H"""
     <div class="raffle-index">
       <.banner>
-        <.icon name="hero-sparkles-solid" />
-        Mystery Raffle Coming Soon!
+        <.icon name="hero-sparkles-solid" /> Mystery Raffle Coming Soon!
         <:details :let={emoji}>
-          To Be Revealed Tomorrow <%= emoji %>
+          To Be Revealed Tomorrow {emoji}
         </:details>
         <:details>
           Any guesses?
@@ -30,6 +29,9 @@ defmodule RaffleyWeb.RaffleLive.Index do
       <.filter_form form={@form} />
 
       <div class="raffles" id="raffles" phx-update="stream">
+        <div id="empty" class="no-results only:block hidden">
+          No raffles found. Try changing your filters.
+        </div>
         <.raffle_card :for={{dom_id, raffle} <- @streams.raffles} raffle={raffle} id={dom_id} />
       </div>
     </div>
@@ -58,21 +60,30 @@ defmodule RaffleyWeb.RaffleLive.Index do
 
   def filter_form(assigns) do
     ~H"""
-      <.form for={@form} id="filter-form" phx-change="filter">
-        <.input field={@form[:q]} placeholder="Search..." autocomplete="off" />
-        <.input
-          type="select"
-          field={@form[:status]}
-          prompt="Status"
-          options={[:upcoming, :open, :closed]}
-        />
-        <.input
-          type="select"
-          field={@form[:sort_by]}
-          prompt="Sort By"
-          options={[:price, :ticket_price]}
-        />
-      </.form>
+    <.form for={@form} id="filter-form" phx-change="filter">
+      <.input
+        field={@form[:q]}
+        placeholder="Search..."
+        autocomplete="off"
+        phx-debounce="1000"
+      />
+      <.input
+        type="select"
+        field={@form[:status]}
+        prompt="Status"
+        options={[:upcoming, :open, :closed]}
+      />
+      <.input
+        type="select"
+        field={@form[:sort_by]}
+        prompt="Sort By"
+        options={[
+          Prize: "prize",
+          "Price: High to Low": "ticket_price_desc",
+          "Price: Low to High": "ticket_price_asc"
+        ]}
+      />
+    </.form>
     """
   end
 
