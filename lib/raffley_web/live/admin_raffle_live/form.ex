@@ -64,6 +64,17 @@ defmodule RaffleyWeb.AdminRaffleLive.Form do
   end
 
   def handle_event("save", %{"raffle" => raffle_params}, socket) do
+    save_raffle(socket, socket.assigns.live_action, raffle_params)
+  end
+
+  def handle_event("validate", %{"raffle" => raffle_params}, socket) do
+    changeset = Admin.change_raffle(socket.assigns.raffle, raffle_params)
+    socket = assign(socket, :form, to_form(changeset, action: :validate))
+
+    {:noreply, socket}
+  end
+
+  defp save_raffle(socket, :new, raffle_params) do
     case Admin.create_raffle(raffle_params) do
       {:ok, _raffle} ->
         socket =
@@ -80,10 +91,20 @@ defmodule RaffleyWeb.AdminRaffleLive.Form do
     end
   end
 
-  def handle_event("validate", %{"raffle" => raffle_params}, socket) do
-    changeset = Admin.change_raffle(socket.assigns.raffle, raffle_params)
-    socket = assign(socket, :form, to_form(changeset, action: :validate))
+  defp save_raffle(socket, :edit, raffle_params) do
+    case Admin.update_raffle(socket.assigns.raffle, raffle_params) do
+      {:ok, _raffle} ->
+        socket =
+          socket
+          |> put_flash(:info, "Raffle updated successfully!")
+          |> push_navigate(to: ~p"/admin/raffles")
 
-    {:noreply, socket}
+        {:noreply, socket}
+
+      {:error, %Ecto.Changeset{} = changeset} ->
+        socket = assign(socket, :form, to_form(changeset))
+
+        {:noreply, socket}
+    end
   end
 end
