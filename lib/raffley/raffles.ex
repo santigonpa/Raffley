@@ -9,10 +9,12 @@ defmodule Raffley.Raffles do
 
   def get_raffle!(id) do
     Repo.get!(Raffle, id)
+    |> Repo.preload(:charity)
   end
 
   def featured_raffles(raffle) do
     Process.sleep(2000)
+
     Raffle
     |> where(status: :open)
     |> where([r], r.id != ^raffle.id)
@@ -26,11 +28,12 @@ defmodule Raffley.Raffles do
     |> with_status(filter["status"])
     |> search_by(filter["q"])
     |> sort(filter["sort_by"])
+    |> preload(:charity)
     |> Repo.all()
   end
 
   defp with_status(query, status)
-    when status in ~w(open closed upcoming) do
+       when status in ~w(open closed upcoming) do
     where(query, status: ^status)
   end
 
@@ -50,7 +53,7 @@ defmodule Raffley.Raffles do
     order_by(query, desc: :ticket_price)
   end
 
-   defp sort(query, "ticket_price_asc") do
+  defp sort(query, "ticket_price_asc") do
     order_by(query, asc: :ticket_price)
   end
 
