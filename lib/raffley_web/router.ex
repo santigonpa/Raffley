@@ -37,6 +37,10 @@ defmodule RaffleyWeb.Router do
     live "/estimator", EstimatorLive
     live "/raffles", RaffleLive.Index
     live "/raffles/:id", RaffleLive.Show
+  end
+
+  scope "/", RaffleyWeb do
+    pipe_through [:browser, :require_authenticated_user]
 
     live "/admin/raffles", AdminRaffleLive.Index
     # live action new/edit
