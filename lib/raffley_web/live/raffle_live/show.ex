@@ -19,6 +19,10 @@ defmodule RaffleyWeb.RaffleLive.Show do
 
   # called after mount and before render
   def handle_params(%{"id" => id}, _uri, socket) do
+    if connected?(socket) do
+      Raffles.subscribe(id)
+    end
+
     raffle = Raffles.get_raffle!(id)
 
     tickets = Raffles.list_tickets(raffle)
@@ -173,5 +177,19 @@ defmodule RaffleyWeb.RaffleLive.Show do
 
         {:noreply, socket}
     end
+  end
+
+  def handle_info({:ticket_created, ticket}, socket) do
+    socket =
+      socket
+      |> stream_insert(:tickets, ticket, at: 0)
+      |> update(:ticket_count, &(&1 + 1))
+      |> update(:ticket_sum, &(&1 + ticket.price))
+
+    {:noreply, socket}
+  end
+
+  def handle_info({:raffley_updated, raffle}, socket) do
+    {:noreply, assign(socket, :raffle, raffle)}
   end
 end
